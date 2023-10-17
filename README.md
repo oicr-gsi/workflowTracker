@@ -5,7 +5,7 @@ github repositories of our production workflows. THe aim is to run automatic upd
 reports in .json and .html formats. Developed in Python 3.10, these script will run using any of
 3.10+ python modules available on GSI Univa cluster.
 
-![HTML output](docs/table_screenshot.png)
+![HTML output](./table_screenshot.png)
 
 # Installation
 
