@@ -5,16 +5,16 @@ github repositories of our production workflows. THe aim is to run automatic upd
 reports in .json and .html formats. Developed in Python 3.10, these script will run using any of
 3.10+ python modules available on GSI Univa cluster.
 
-![HTML output](table_screenshot.png)
+![HTML output](docs/table_screenshot.png)
 
 # Installation
 
 Designed to be modularized, workflowTacker should be used on Univa network-enabled nodes as a module
 However, if you want to install it locally the first thing to do is 
 
-'''
+```
    pip install -r requirements.txt
-'''
+```
 
 workflowTracker uses a few modules which are not a part of regular python installation.
 
@@ -36,9 +36,9 @@ All of this information is organized in a Python dictionary and dumped as a .jso
 
 The script should be run as 
 
-'''
+```
   python3 workflow_tracker.py
-'''
+```
 
 Following options are available:
 
@@ -61,16 +61,16 @@ process workflows. After bringing all of these data together, the script will ou
 It is important to have a working SSH key for communicating with Bitbucket and a token for communication with Github.
 Generate your ssh key pair with 
 
-'''
+```
   ssh-keygen -t rsa
-'''
+```
 
 and then use it with git:
 
-'''
+```
    export GIT_SSH_COMMAND="ssh -i ~/.ssh/keys/my_key"
    git clone ssh://git@bitbucket.oicr.on.ca/gsi/analysis-config.git   
-'''
+```
 
 As for Github, the token should be generated according to the instruction on the [github website](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). Token goes into .toml file, so permissions ifor this file should be set to 660.
 
