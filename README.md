@@ -1,7 +1,7 @@
 # workflowTracker
 
 these scripts are for getting information from both Bitbucket analysis-config repository and
-github repositories of our production workflows. THe aim is to run automatic updates and produce
+github repositories of our production workflows. The aim is to run automatic updates and produce
 reports in .json and .html formats. Developed in Python 3.10, these script will run using any of
 3.10+ python modules available on GSI Univa cluster.
 
