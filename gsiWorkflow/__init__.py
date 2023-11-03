@@ -10,7 +10,6 @@ import glob
 """
    Vet a Workflow path. extract basename, remove extension. Get rid of prefixes
 """
-@staticmethod
 def _vet_wf_name(path: str, prefixes: list):
     base_name = os.path.basename(path)
     base_name = base_name.rstrip("vidarrworkflow")
@@ -24,7 +23,6 @@ def _vet_wf_name(path: str, prefixes: list):
 """ 
    Static method for getting Workflow names from .vidarrworkflow files
 """
-@staticmethod
 def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
     if repo_dir and os.path.isdir(repo_dir):
         wf_hash = {}
@@ -44,7 +42,6 @@ def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
 """
    Subroutine useful both for Olive and Workflow files, extract modules into a hash
 """
-@staticmethod
 def parse_module_strings(m_strings: list):
     data_modules = []
     code_modules = []
@@ -70,7 +67,6 @@ def parse_module_strings(m_strings: list):
 """
    Parse Workflow wdl file (extract modules) 
 """
-@staticmethod
 def parse_workflow(workflow: str, wf_lines: list):
     module_lines = []
     for w_line in wf_lines:
