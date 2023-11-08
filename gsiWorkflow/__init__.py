@@ -39,6 +39,7 @@ def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
     else:
         return None
 
+
 """
    Subroutine useful both for Olive and Workflow files, extract modules into a hash
 """
@@ -47,7 +48,7 @@ def parse_module_strings(m_strings: list):
     code_modules = []
     not_mods = re.compile('[$()|}{]')
     for m_string in m_strings:
-        wf_check = re.search(":\s*\"(.+)\"", m_string)
+        wf_check = re.search("module.*[:=].*\"(.+)\"", m_string, re.IGNORECASE)
         if wf_check is not None:
             next_mod_string = wf_check
         else:
@@ -56,8 +57,8 @@ def parse_module_strings(m_strings: list):
             modules = next_mod_string.group(1).split(" ")
             for mod in modules:
                 vetted_mod = mod.replace("\"", "")
-                if not_mods.search(vetted_mod) is None and re.search("/", vetted_mod) is not None:
-                    if re.search("hg\d+|mm\d+|hs\d+", vetted_mod) is not None:
+                if not_mods.search(vetted_mod) is None and re.search('/\d', vetted_mod) is not None:
+                    if re.search("hg\d+|mm\d+|hs\d+|data", vetted_mod) is not None:
                         data_modules.append(vetted_mod)
                     else:
                         code_modules.append(vetted_mod)
@@ -70,11 +71,10 @@ def parse_module_strings(m_strings: list):
 def parse_workflow(workflow: str, wf_lines: list):
     module_lines = []
     for w_line in wf_lines:
-        next_mod_string = re.search("module.*", w_line)
+        next_mod_string = re.search("module.*", w_line, re.IGNORECASE)
         if next_mod_string is not None:
-            if re.search("/", w_line) is not None:
+            if re.search('/\d', w_line) is not None:
                 module_lines.append(w_line)
     if len(module_lines) == 0:
         print(f'WARNING: No module lines for {workflow}')
     return parse_module_strings(module_lines)
-
