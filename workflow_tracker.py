@@ -6,10 +6,10 @@
    * bring all info together and format into HTML or tsv. Also, dump a json file
 """
 import collections
-import os.path
 import tomli
 import argparse
 import json
+import os
 from git import Git
 import gsiWorkflow
 import gsiOlive
@@ -137,10 +137,9 @@ if __name__ == '__main__':
     olive_info = {}
     if 'aliases' in settings.keys():
         olive_files = gsiOlive.collect_olives(settings["repo"]["local_olive_dir"], instances, settings['aliases'])
-        olive_info = gsiOlive.extract_olive_info(olive_files, wf_names, settings['aliases'])
     else:
         olive_files = gsiOlive.collect_olives(settings["repo"]["local_olive_dir"], instances, {})
-        olive_info = gsiOlive.extract_olive_info(olive_files, wf_names, {})
+    olive_info = gsiOlive.extract_olive_info(olive_files, wf_names)
 
     vetted_data = {}
     ''' D. If configured, try getting list of repos from github (a dict keyed by gsiWorkflow name with no prefixes)'''
@@ -202,7 +201,7 @@ else:
 
 # TODO: Fix the following:
 """
-   workflows with similar names (mutect, mutect2) get mixed
+   ERROR: Was not able to collect data for [pbcmProjectMedipsPipe]
    ERROR: Was not able to collect data for [crosscheckFingerprintsCollector_fastq]
    ERROR: Was not able to collect data for [umiCollapse_CM]
    ERROR: Was not able to collect data for [dnaSeqQC_MiSeq]
