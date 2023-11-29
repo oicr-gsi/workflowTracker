@@ -14,6 +14,16 @@ class githubRepo:
     token: str
     max_repos: int = 1000
 
+    """ Return shortest, prefix-free name for a workflow """
+    @staticmethod
+    def get_raw_name(names: list, settings: dict) -> str:
+        raw_name = min((word for word in names if word), key=len)
+        if 'prefixes' in settings.keys():
+            for prx in settings['prefixes'].values():
+                raw_name = raw_name.replace(prx, "")
+                raw_name = raw_name.rstrip("_")
+        return raw_name.lower()
+
     """ Format curl command """
     def get_curl_command(self, request: str, req_type="repos") -> str:
         curl_cmd = f'curl -L \
@@ -39,7 +49,7 @@ class githubRepo:
         return repos
 
     """ Get file content as an array of strings """
-    def get_file_content(self, workflow_repo: str, file: str) -> list:
+    def get_file_content(self, workflow_repo: str, file: str) -> bytes | None:
         file_request = self.get_curl_command(f'{workflow_repo}/contents/{file}')
         f_string = subprocess.check_output(file_request, shell=True).decode().strip()
         f_data = json.loads(f_string)
@@ -62,7 +72,7 @@ class githubRepo:
         return tags
 
     """ Get the latest tag from a Repository, be aware of possible letters at the end """
-    def get_latest_tag(self, workflow_repo: str) -> str:
+    def get_latest_tag(self, workflow_repo: str) -> str | None:
         tags = self.get_repo_tags(workflow_repo)
         if len(tags) > 0:
             latest = ['0', '0', '0']
@@ -84,3 +94,21 @@ class githubRepo:
             return ".".join(latest)
         else:
             return None
+
+    """ 
+       Function for making a data for matching workflows to repos, calls a couple of functions and writes to dict
+       This implementation returns a dict keyed with rawName (short name of the workflow stripped of all prefixes)
+    """
+    def get_cross_match_data(self, settings: dict, cross_matches: dict):
+        repo_list = self.get_repo_list()
+        if isinstance(repo_list, dict):
+            for repo in repo_list.keys():
+                try:
+                    wf_data = self.get_file_content(repo, "vidarrbuild.json")
+                    if wf_data is not None:
+                        wf_info = json.loads(wf_data)
+                        cross_matches[self.get_raw_name(wf_info['names'], settings)] = {'repo': repo_list[repo],
+                                                                                        'wdl':  wf_info['wdl']}
+                except:
+                    print(f'Failed to retrieve data for repo {repo}')
+
