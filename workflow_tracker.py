@@ -57,13 +57,15 @@ def update_source(path: str, main_branch: str):
 """
     From the list of names, pick the shortest and strip it of all known prefixes
 """
-def get_raw_name(names: list) -> str:
-    raw_name = min((word for word in names if word), key=len)
-    if 'prefixes' in settings.keys():
-        for prx in settings['prefixes'].values():
-            raw_name = raw_name.replace(prx, "")
-            raw_name = raw_name.rstrip("_")
-    return raw_name
+def get_raw_name(names: list, to_match: list):
+    for name in names:
+        if 'prefixes' in settings.keys():
+            for prx in settings['prefixes'].values():
+                raw_name = name.replace(prx, "")
+                raw_name = raw_name.rstrip("_")
+                if raw_name in to_match:
+                    return raw_name
+    return None
 
 """
     Join metadata from olives with gsiWorkflow-derived information, return hash
@@ -157,16 +159,16 @@ if __name__ == '__main__':
             try:
                 wf_data = myRepo.get_file_content(repo, "vidarrbuild.json")
                 wf_info = json.loads(wf_data)
-                wf_id = get_raw_name(wf_info['names'])
-                if wf_id in olive_info.keys() and len(olive_info[wf_id]) != 0:
+                wf_id = get_raw_name(wf_info['names'], olive_info.keys())
+                if wf_id and len(olive_info[wf_id]) != 0:
                     wf_wdl = myRepo.get_file_content(repo, wf_info['wdl'])
                     wf_wdl_lines = str(wf_wdl, encoding='utf-8').split("\n")
                     wf_latest = myRepo.get_latest_tag(repo)
                     wf_modules = gsiWorkflow.parse_workflow(repo, wf_wdl_lines)
                     repo_info[wf_id] = {'url': repo_list[repo],
-                                        'latest_tag': wf_latest,
-                                        'data_modules': wf_modules['data_modules'],
-                                        'code_modules': wf_modules['code_modules']}
+                                            'latest_tag': wf_latest,
+                                            'data_modules': wf_modules['data_modules'],
+                                            'code_modules': wf_modules['code_modules']}
                 else:
                     print(f'WARNING: Skipping [{wf_id}] as it is not currently in use...')
             except TypeError:
@@ -199,12 +201,11 @@ if len(vetted_data) > 0:
 else:
     print("ERROR: Was not able to collect up-to-date information, examine this log and make changes")
 
-# TODO: Fix the following:
+# TODO: Fix the following (may need to update the respective repos):
 """
    ERROR: Was not able to collect data for [pbcmProjectMedipsPipe]
    ERROR: Was not able to collect data for [crosscheckFingerprintsCollector_fastq]
    ERROR: Was not able to collect data for [umiCollapse_CM]
-   ERROR: Was not able to collect data for [dnaSeqQC_MiSeq]
 """
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
