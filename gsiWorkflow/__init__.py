@@ -10,6 +10,8 @@ import glob
 """
    Vet a Workflow path. extract basename, remove extension. Get rid of prefixes
 """
+
+
 def _vet_wf_name(path: str, prefixes: list):
     base_name = os.path.basename(path)
     base_name = base_name.rstrip("vidarrworkflow")
@@ -23,6 +25,8 @@ def _vet_wf_name(path: str, prefixes: list):
 """ 
    Static method for getting Workflow names from .vidarrworkflow files
 """
+
+
 def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
     if repo_dir and os.path.isdir(repo_dir):
         wf_hash = {}
@@ -43,6 +47,8 @@ def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
 """
    Subroutine useful both for Olive and Workflow files, extract modules into a hash
 """
+
+
 def parse_module_strings(m_strings: list):
     data_modules = []
     code_modules = []
@@ -57,8 +63,8 @@ def parse_module_strings(m_strings: list):
             modules = next_mod_string.group(1).split(" ")
             for mod in modules:
                 vetted_mod = mod.replace("\"", "")
-                if not_mods.search(vetted_mod) is None and re.search('/\d', vetted_mod) is not None:
-                    if re.search("hg\d+|mm\d+|hs\d+|data", vetted_mod) is not None:
+                if not_mods.search(vetted_mod) is None and re.search(r'/\d', vetted_mod) is not None:
+                    if re.search(r'hg\d+|mm\d+|hs\d+|data', vetted_mod) is not None:
                         data_modules.append(vetted_mod)
                     else:
                         code_modules.append(vetted_mod)
@@ -68,13 +74,14 @@ def parse_module_strings(m_strings: list):
 """
    Parse Workflow wdl file (extract modules) 
 """
+
+
 def parse_workflow(workflow: str, wf_lines: list):
     module_lines = []
     for w_line in wf_lines:
         next_mod_string = re.search("module.*", w_line, re.IGNORECASE)
-        if next_mod_string is not None:
-            if re.search('/\d', w_line) is not None:
-                module_lines.append(w_line)
+        if next_mod_string is not None and re.search(r'/\d', w_line) is not None:
+            module_lines.append(w_line)
     if len(module_lines) == 0:
         print(f'WARNING: No module lines for {workflow}')
     return parse_module_strings(module_lines)
