@@ -56,14 +56,17 @@ def update_source(path: str, main_branch: str):
 
 """
     From the list of names, pick the shortest and strip it of all known prefixes
+    also check if we have all lowercase name (if camelCase name found)
 """
 def get_raw_name(names: list, to_match: list):
     for name in names:
         if 'prefixes' in settings.keys():
             for prx in settings['prefixes'].values():
-                raw_name = name.replace(prx, "")
+                raw_name = name.removesuffix(prx)
                 raw_name = raw_name.rstrip("_")
-                if raw_name in to_match:
+                if raw_name.lower() in to_match:
+                    return raw_name.lower()
+                elif raw_name in to_match:
                     return raw_name
     return None
 
@@ -132,7 +135,7 @@ if __name__ == '__main__':
             prefixes = settings['prefixes'].values()
         wf_names = gsiWorkflow.extract_wf_names(settings["repo"]["local_olive_dir"], instances, prefixes)
     else:
-        print("ERROR: THere are no instances to check, fix your settings")
+        print("ERROR: There are no instances to check, fix your settings")
 
     ''' C. collect and process olives, extract modules and tags '''
     olive_files = {}
@@ -160,17 +163,18 @@ if __name__ == '__main__':
                 wf_data = myRepo.get_file_content(repo, "vidarrbuild.json")
                 wf_info = json.loads(wf_data)
                 wf_id = get_raw_name(wf_info['names'], olive_info.keys())
-                if wf_id and len(olive_info[wf_id]) != 0:
+                if wf_id in olive_info.keys() and len(olive_info[wf_id]) != 0 or \
+                   wf_id.lower() in olive_info.keys() and len(olive_info[wf_id.lower()]) != 0:
                     wf_wdl = myRepo.get_file_content(repo, wf_info['wdl'])
                     wf_wdl_lines = str(wf_wdl, encoding='utf-8').split("\n")
                     wf_latest = myRepo.get_latest_tag(repo)
                     wf_modules = gsiWorkflow.parse_workflow(repo, wf_wdl_lines)
                     repo_info[wf_id] = {'url': repo_list[repo],
-                                            'latest_tag': wf_latest,
-                                            'data_modules': wf_modules['data_modules'],
-                                            'code_modules': wf_modules['code_modules']}
+                                        'latest_tag': wf_latest,
+                                        'data_modules': wf_modules['data_modules'],
+                                        'code_modules': wf_modules['code_modules']}
                 else:
-                    print(f'WARNING: Skipping [{wf_id}] as it is not currently in use...')
+                    print(f'WARNING: Skipping [{repo}] as it is not currently in use...')
             except TypeError:
                 print(f'WARNING: Repo [{repo}] Does not have information expected for a gsiWorkflow')
             except:
@@ -183,6 +187,8 @@ if __name__ == '__main__':
         for wf_id in olive_info.keys():
             if wf_id in repo_info.keys():
                 vetted_data[wf_id] = join_metadata(olive_info[wf_id], repo_info[wf_id], wf_id)
+            elif wf_id.lower() in repo_info.keys():
+                vetted_data[wf_id] = join_metadata(olive_info[wf_id], repo_info[wf_id.lower()], wf_id)
             else:
                 print(f'ERROR: Was not able to collect data for [{wf_id}]')
     else:
@@ -201,11 +207,9 @@ if len(vetted_data) > 0:
 else:
     print("ERROR: Was not able to collect up-to-date information, examine this log and make changes")
 
-# TODO: Fix the following (may need to update the respective repos):
 """
-   ERROR: Was not able to collect data for [pbcmProjectMedipsPipe]
-   ERROR: Was not able to collect data for [crosscheckFingerprintsCollector_fastq]
-   ERROR: Was not able to collect data for [umiCollapse_CM]
+   ERROR: Was not able to collect data for [pbcmProjectMedipsPipe] - this is due to a repo being Private, not Public
+   ERROR: Was not able to collect data for [providencePipeline] - this may be ignored
 """
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
