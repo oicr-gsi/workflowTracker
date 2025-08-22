@@ -1,5 +1,6 @@
 [repo]
 local_olive_dir="$HOME/code/analysis-config"
+main="main"
 workflow_repo_url="https://github.com/oicr-gsi"
 organization="oicr-gsi"
 token="ADD_YOUR_OWN"
@@ -20,6 +21,12 @@ call_prefix_h="tumor_group"
 call_prefix_i="by_sample"
 call_prefix_k="filter_only"
 call_prefix_n="normal_only"
+call_prefix_o="MiSeq"
+call_prefix_p="CM"
+call_prefix_r="TS"
+call_prefix_s="fastq"
+call_prefix_t="bam"
+call_prefix_u="miseq"
 
 [aliases]
 clinical="production-cap"
