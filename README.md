@@ -1,6 +1,6 @@
 # workflowTracker
 
-these scripts are for getting information from both Bitbucket analysis-config repository and
+these scripts are for getting information from both OICR Bitbucket analysis-config repository and
 github repositories of our production workflows. The aim is to run automatic updates and produce
 reports in .json and .html formats. Developed in Python 3.10, these script will run using any of
 3.10+ python modules available on GSI Univa cluster.
@@ -72,7 +72,7 @@ and then use it with git:
    git clone ssh://git@bitbucket.oicr.on.ca/gsi/analysis-config.git   
 ```
 
-As for Github, the token should be generated according to the instruction on the [github website](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). Token goes into .toml file, so permissions ifor this file should be set to 660.
+As for Github, the token should be generated according to the instruction on the [github website](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). Token goes into .toml file, so permissions for this file should be set to 660 (not everyone should see what's iside).
 
 # Running as a cron job
 
