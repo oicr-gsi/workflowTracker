@@ -194,18 +194,18 @@ if __name__ == '__main__':
     else:
         print("ERROR: Repo credentials are not configured, no update from github is possible")
 
-''' G. Dump the data into json file and generate a HTML page '''
-if len(vetted_data) > 0:
-    vetted_od = collections.OrderedDict(sorted(vetted_data.items()))
-    with open(output_json, "w") as wfj:
-        json.dump(vetted_od, wfj)
+    ''' G. Dump the data into json file and generate a HTML page '''
+    if len(vetted_data) > 0:
+        vetted_od = collections.OrderedDict(sorted(vetted_data.items()))
+        with open(output_json, "w") as wfj:
+            json.dump(vetted_od, wfj)
 
-    html_page = htmlRenderer.convert2page(vetted_od)
-    '''Return either HTML table or entire page'''
-    with open(output_page, 'w') as op:
-        op.write(html_page)
-else:
-    print("ERROR: Was not able to collect up-to-date information, examine this log and make changes")
+        html_page = htmlRenderer.convert2page(vetted_od)
+        '''Return either HTML table or entire page'''
+        with open(output_page, 'w') as op:
+            op.write(html_page)
+    else:
+        print("ERROR: Was not able to collect up-to-date information, examine this log and make changes")
 
 """
    ERROR: Was not able to collect data for [pbcmProjectMedipsPipe] - this is due to a repo being Private, not Public

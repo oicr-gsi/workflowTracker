@@ -4,6 +4,17 @@
 """
 from json2html import *
 from bs4 import BeautifulSoup as Bs
+import datetime
+
+
+"""
+   Return date wrapped in div
+"""
+def today_date() -> str:
+    today = datetime.date.today()
+    formatted_today = today.strftime("%A %d. %B %Y")
+    return formatted_today
+
 
 """
    Return JSON rendered into HTML table
@@ -13,7 +24,7 @@ def convert2page(input_data: dict):
            <style> table {border-collapse: separate; border-spacing: 0;} \
            th {position: sticky; top: 0; padding: 4px; background-color: #009879; color: #ffffff; border-bottom: 2px solid #ddd; text-align: left;} \
            td {padding: 4px; text-align: left; border-bottom: 1px solid #ddd; }</style> \
-           </head><body>" + convert2table(input_data) + "</body></html>"
+           </head><body>" + convert2table(input_data) + "<div><h3>Updated on" + today_date() + "</h3></div></body></html>"
 
     soup = Bs(html, "html.parser")
     return soup.prettify()
