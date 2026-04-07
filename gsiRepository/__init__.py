@@ -111,4 +111,3 @@ class githubRepo:
                                                                                         'wdl':  wf_info['wdl']}
                 except:
                     print(f'Failed to retrieve data for repo {repo}')
-
