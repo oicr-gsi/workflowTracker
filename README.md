@@ -20,7 +20,7 @@ workflowTracker uses a few modules which are not a part of regular python instal
 
 # Captured Information
 
-The main script calls variaous functions to bring together several pieces of information:
+The main script calls various functions to bring together several pieces of information:
 
 * workflow name (Workflow/Alias)
 * RUO Tags (versions of workflows used)
@@ -58,14 +58,16 @@ process workflows. After bringing all of these data together, the script will ou
 
 # Authentication
 
-It is important to have a working SSH key for communicating with Bitbucket and a token for communication with Github.
+It is important to have a working SSH key for communicating with Bitbucket (not needed with cronjob setup)
+and a token for communication with Github.
+
 Generate your ssh key pair with 
 
 ```
   ssh-keygen -t rsa
 ```
 
-and then use it with git:
+and then use it with git, but only if needed:
 
 ```
    export GIT_SSH_COMMAND="ssh -i ~/.ssh/keys/my_key"
