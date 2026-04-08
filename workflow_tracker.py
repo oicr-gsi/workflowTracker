@@ -61,14 +61,32 @@ def update_source(path: str, main_branch: str):
 def get_raw_name(names: list, to_match: list):
     for name in names:
         if 'prefixes' in settings.keys():
+            raw_name = name
             for prx in settings['prefixes'].values():
-                raw_name = name.removesuffix(prx)
+                raw_name = raw_name.replace(prx, "")
+                raw_name = raw_name.replace("__", "_")
                 raw_name = raw_name.rstrip("_")
-                if raw_name.lower() in to_match:
-                    return raw_name.lower()
-                elif raw_name in to_match:
-                    return raw_name
+            if raw_name.lower() in to_match:
+                return raw_name.lower()
+            elif raw_name in to_match:
+                return raw_name
     return None
+
+"""
+    From the list of names, pick the shortest and strip it of all known prefixes
+    also check if we have all lowercase name (if camelCase name found)
+"""
+def get_aliases(names: list) -> list:
+    unique_names = set()
+    for name in names:
+        if 'prefixes' in settings.keys():
+            raw_name = name
+            for prx in settings['prefixes'].values():
+                raw_name = raw_name.replace(prx, "")
+                raw_name = raw_name.replace("__", "_")
+                raw_name = raw_name.rstrip("_")
+            unique_names.add(raw_name)
+    return list(unique_names)
 
 """
     Join metadata from olives with gsiWorkflow-derived information, return hash
@@ -171,6 +189,7 @@ if __name__ == '__main__':
                     wf_modules = gsiWorkflow.parse_workflow(repo, wf_wdl_lines)
                     repo_info[wf_id] = {'url': repo_list[repo],
                                         'latest_tag': wf_latest,
+                                        'aliases': get_aliases(wf_info['names']),
                                         'data_modules': wf_modules['data_modules'],
                                         'code_modules': wf_modules['code_modules']}
                 else:
@@ -189,6 +208,10 @@ if __name__ == '__main__':
                 vetted_data[wf_id] = join_metadata(olive_info[wf_id], repo_info[wf_id], wf_id)
             elif wf_id.lower() in repo_info.keys():
                 vetted_data[wf_id] = join_metadata(olive_info[wf_id], repo_info[wf_id.lower()], wf_id)
+            elif wf_id.lower() not in repo_info.keys():  # Last resort, search aliases
+                for rwf_id in repo_info.keys():
+                    if 'aliases' in repo_info[rwf_id].keys() and wf_id.lower() in repo_info[rwf_id]['aliases']:
+                        vetted_data[wf_id] = join_metadata(olive_info[wf_id], repo_info[rwf_id], wf_id)
             else:
                 print(f'ERROR: Was not able to collect data for [{wf_id}]')
     else:
