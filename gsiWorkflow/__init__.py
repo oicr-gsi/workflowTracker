@@ -38,7 +38,7 @@ def extract_wf_names(repo_dir: str, instances_list: list, prefixes: list):
             for wf in wf_files:
                 wf_names.append(_vet_wf_name(wf, prefixes))
             if len(wf_names) > 0:
-                wf_hash[inst] = set(wf_names)
+                wf_hash[inst] = sorted(set(wf_names))
         return wf_hash
     else:
         return None

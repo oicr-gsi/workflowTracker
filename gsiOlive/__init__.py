@@ -67,7 +67,7 @@ def extract_olive_info(olive_files: dict, workflow_names: dict) -> dict:
                 for name in oli['names']:
                     matched_name = re.search(wf, name)
                     if matched_name is not None:
-                        matched_again = re.search(wf + "[_\-.]", name)
+                        matched_again = re.search(wf + r"[_\-.]", name)
                         if matched_again is not None or len(wf) == len(name):
                             if wf not in olive_info.keys():
                                 olive_info[wf] = {}
@@ -105,8 +105,8 @@ def parse_olives(olive_files: list) -> dict:
             run_lines = []
 
         for rl in run_lines:
-            next_tag = re.search("v(\d+_\d+_*\d*\w*)$", rl)
-            next_name = re.search("(\S+)_v\d+_\d+_*\d*\w*$", rl)
+            next_tag = re.search(r"v(\d+_\d+_*\d*\w*)$", rl)
+            next_name = re.search(r"(\S+)_v\d+_\d+_*\d*\w*$", rl)
             if next_tag is not None:
                 vetted_tags.append(next_tag.group(1).replace("_", "."))
             if next_name is not None:

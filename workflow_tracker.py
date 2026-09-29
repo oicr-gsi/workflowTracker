@@ -6,6 +6,8 @@
    * bring all info together and format into HTML or tsv. Also, dump a json file
 """
 import collections
+import re
+
 import tomli
 import argparse
 import json
@@ -14,7 +16,9 @@ from git import Git
 import gsiWorkflow
 import gsiOlive
 import gsiRepository as rP
+import gsiWorkflowSupporter as wsup
 import htmlRenderer
+from itertools import product
 
 settings = {}
 
@@ -163,6 +167,26 @@ if __name__ == '__main__':
     else:
         olive_files = gsiOlive.collect_olives(settings["repo"]["local_olive_dir"], instances, {})
     olive_info = gsiOlive.extract_olive_info(olive_files, wf_names)
+
+    """
+       1. check if we have support_olive in toml, if no - do nothing
+       2. extract unique workflow/version combinations from olive_info
+       3. extract the list of workflows from support_olive, match
+       4. In case of update, re-write the alert olive and send an email/JIRA ticket?    
+    """
+    if 'deployed_olives' in settings.keys():
+        deployed_workflows = set()
+        try:
+            for wf, instances in olive_info.items():
+                for instance in instances.values():
+                    for tag, wf_name in product(instance['tags'], instance['names']):
+                        deployed_workflows.add(wf_name + "_v" + re.sub(r'\.', '_', tag))
+        except:
+            print("ERROR: There was a problem with updating list of deployed olives")
+        wSup = wsup.GsiWorkflowSupporter(list(deployed_workflows), settings['deployed_olives']['path'])
+        wSup.process_update()
+    else:
+        print("INFO: Support olive path is not configured, will NOT update support-checking olive")
 
     vetted_data = {}
     ''' D. If configured, try getting list of repos from github (a dict keyed by gsiWorkflow name with no prefixes)'''

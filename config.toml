@@ -33,8 +33,6 @@ call_prefix_v="_WT"
 clinical="production-cap"
 bmpp="bamMergePreprocessing"
 
-
-
-
-
+[deployed_olives]
+path="$HOME/code/analysis-config/shesmu/common/deployed_olives.set"
 
