@@ -12,11 +12,12 @@ import tomli
 import argparse
 import json
 import os
+from os.path import basename
 from git import Git
 import gsiWorkflow
 import gsiOlive
 import gsiRepository as rP
-import gsiWorkflowSupporter as wsup
+import gsiWorkflowSupporter as wfSupporter
 import htmlRenderer
 from itertools import product
 
@@ -174,6 +175,8 @@ if __name__ == '__main__':
        3. extract the list of workflows from support_olive, match
        4. In case of update, re-write the alert olive and send an email/JIRA ticket?    
     """
+    deployed_wf_list = ""
+    wf_list_needs_update = False
     if 'deployed_olives' in settings.keys():
         deployed_workflows = set()
         try:
@@ -183,8 +186,9 @@ if __name__ == '__main__':
                         deployed_workflows.add(wf_name + "_v" + re.sub(r'\.', '_', tag))
         except:
             print("ERROR: There was a problem with updating list of deployed olives")
-        wSup = wsup.GsiWorkflowSupporter(list(deployed_workflows), settings['deployed_olives']['path'])
-        wSup.process_update()
+        wSup = wfSupporter.GsiWorkflowSupporter(list(deployed_workflows), settings['deployed_olives']['path'])
+        wf_list_needs_update = wSup.process_update()
+        deployed_wf_list = basename(settings['deployed_olives']['path'])
     else:
         print("INFO: Support olive path is not configured, will NOT update support-checking olive")
 
@@ -247,7 +251,7 @@ if __name__ == '__main__':
         with open(output_json, "w") as wfj:
             json.dump(vetted_od, wfj)
 
-        html_page = htmlRenderer.convert2page(vetted_od)
+        html_page = htmlRenderer.convert2page(vetted_od, deployed_wf_list, wf_list_needs_update)
         '''Return either HTML table or entire page'''
         with open(output_page, 'w') as op:
             op.write(html_page)

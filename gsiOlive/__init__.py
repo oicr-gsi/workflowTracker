@@ -38,6 +38,7 @@ def merge_info(existing_hash: dict, new_hash: dict) -> dict:
         new_hash['olives'].extend(existing_hash['olives'])
         new_hash['data_modules'] = new_hash['data_modules'].union(existing_hash['data_modules'])
         new_hash['code_modules'] = new_hash['code_modules'].union(existing_hash['code_modules'])
+        new_hash['names'] = new_hash['names'].union(existing_hash['names']) 
         new_hash['tags'] = new_hash['tags'].union(existing_hash['tags'])
     return new_hash
 
@@ -106,7 +107,7 @@ def parse_olives(olive_files: list) -> dict:
 
         for rl in run_lines:
             next_tag = re.search(r"v(\d+_\d+_*\d*\w*)$", rl)
-            next_name = re.search(r"(\S+)_v\d+_\d+_*\d*\w*$", rl)
+            next_name = re.search(r"(\S+)_v\d+_\d+_*\d*\w*$", re.sub(r"^.*::", "", rl))
             if next_tag is not None:
                 vetted_tags.append(next_tag.group(1).replace("_", "."))
             if next_name is not None:

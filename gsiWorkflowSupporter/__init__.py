@@ -3,6 +3,8 @@
    it should initialize and respond to different requests
 """
 import re
+from os.path import basename
+
 
 class GsiWorkflowSupporter:
     deployed_workflows = []
@@ -33,12 +35,16 @@ class GsiWorkflowSupporter:
     @staticmethod
     def update_table(deployed_workflows: list, table_path: str):
         try:
-            with open(table_path, "w") as updating_olive:
+            staged_table = basename(table_path)
+            with open(staged_table, "w") as updating_olive:
                 updating_olive.writelines(line + "\n" for line in deployed_workflows)
         except:
             print("ERROR: An update process failed for alerting olive")
 
     ''' Function to handle the check and update (if needed) '''
-    def process_update(self):
+    def process_update(self) -> bool:
         if not self.lists_identical():
             GsiWorkflowSupporter.update_table(self.deployed_workflows, self.table_path)
+            return True
+        else:
+            return False
